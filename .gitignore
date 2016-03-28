@@ -60,3 +60,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#Sensorhub-file containing shared access keys
+sensorhub.py
