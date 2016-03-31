@@ -16,6 +16,9 @@ class SensorToCloud():
     msg = ""
     while(len(msg) < 1 or msg[-1:] != "\n"):
       msg += sock.recv(1).decode("utf-8")
+    if msg[-1:] != "\n":
+      """Timeout"""
+      raise Exception("Timeout")
     return msg
   
   """
@@ -36,17 +39,21 @@ class SensorToCloud():
   """
     Send queries to device, results to cloud
   """
-  def queryAllToCloud(self):
+  def queryAllToCloud(self, timeout):
     s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     s.connect((self.device_address, self.port))
+    s.settimeout(timeout)
     "Create SAS (security token) valid for 60 seconds"
     self.azure_client.create_sas(60)
     
-    for query in self.queries:
-      self.send_buffered(query, s)
-      query_result = self.read_line(s)
-      self.azure_client.send(query_result.encode("utf-8"))
-    
+    try:
+      for query in self.queries:
+        self.send_buffered(query, s)
+        query_result = self.read_line(s)
+        self.azure_client.send(query_result.encode("utf-8"))
+        print("Sent new request at %d" % time.time())
+    except Exception as i:
+      print("Exception: %s" % type(i))
     s.close
    
   def __init__(self, device_client, bt_mac_addr, port, bufsize, queries):
