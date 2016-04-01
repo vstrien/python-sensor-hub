@@ -41,7 +41,10 @@ class SensorToCloud():
   """
   def queryAllToCloud(self, timeout):
     s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    s.connect((self.device_address, self.port))
+    try:
+      s.connect((self.device_address, self.port))
+    except BluetoothError as b:
+      return
     s.settimeout(timeout)
     "Create SAS (security token) valid for 60 seconds"
     self.azure_client.create_sas(60)
@@ -50,6 +53,7 @@ class SensorToCloud():
       for query in self.queries:
         self.send_buffered(query, s)
         query_result = self.read_line(s)
+        json.loads(query_result)
         self.azure_client.send(query_result.encode("utf-8"))
         print("Sent new request at %d" % time.time())
     except Exception as i:
