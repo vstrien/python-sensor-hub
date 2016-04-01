@@ -43,7 +43,7 @@ class SensorToCloud():
     s = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
     try:
       s.connect((self.device_address, self.port))
-    except BluetoothError as b:
+    except bluetooth.btcommon.BluetoothError as b:
       return
     s.settimeout(timeout)
     "Create SAS (security token) valid for 60 seconds"
