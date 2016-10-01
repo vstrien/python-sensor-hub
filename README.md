@@ -7,6 +7,8 @@ Azure.
 The DeviceClient-class I use is written by @bechynsky and forked from 
 https://github.com/bechynsky/AzureIoTDeviceClientPY.
 
+Notice the SensorToCloud module uses pybluez.
+
 Sample code:
 ```python
 import DeviceClient
